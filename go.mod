@@ -19,4 +19,16 @@ require (
 	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871
 	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	github.com/emersion/go-ical v0.0.0-20200224201310-cd514449c39e
+	github.com/emersion/go-textwrapper v0.0.0-20200911093747-65d896831594 // indirect
+	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
+	github.com/kr/pretty v0.1.0 // indirect
+	github.com/martinlindhe/base36 v1.1.0 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
+	golang.org/x/text v0.3.3 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
+
+replace golang.org/x/crypto => github.com/ProtonMail/crypto v0.0.0-20200605105621-11f6ee2dd602
+
+replace github.com/emersion/go-webdav => ../go-webdav

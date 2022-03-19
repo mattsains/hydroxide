@@ -1,14 +1,15 @@
 package caldav
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/ProtonMail/go-crypto/openpgp"
 	"github.com/emersion/go-ical"
 	"github.com/emersion/go-webdav/caldav"
-	"golang.org/x/crypto/openpgp"
 
 	"github.com/emersion/hydroxide/protonmail"
 )
@@ -36,7 +37,7 @@ func (b *backend) calendar() (*protonmail.Calendar, error) {
 	return calendars[0], nil
 }
 
-func (b *backend) Calendar() (*caldav.Calendar, error) {
+func (b *backend) Calendar(ctx context.Context) (*caldav.Calendar, error) {
 	cal, err := b.calendar()
 	if err != nil {
 		return nil, err
@@ -100,15 +101,15 @@ func (b *backend) toCalendarObject(event *protonmail.CalendarEvent, req *caldav.
 	}, nil
 }
 
-func (b *backend) GetCalendarObject(path string, req *caldav.CalendarCompRequest) (*caldav.CalendarObject, error) {
+func (b *backend) GetCalendarObject(ctx context.Context, path string, req *caldav.CalendarCompRequest) (*caldav.CalendarObject, error) {
 	panic("TODO")
 }
 
-func (b *backend) ListCalendarObjects(req *caldav.CalendarCompRequest) ([]caldav.CalendarObject, error) {
+func (b *backend) ListCalendarObjects(ctx context.Context, req *caldav.CalendarCompRequest) ([]caldav.CalendarObject, error) {
 	panic("TODO")
 }
 
-func (b *backend) QueryCalendarObjects(query *caldav.CalendarQuery) ([]caldav.CalendarObject, error) {
+func (b *backend) QueryCalendarObjects(ctx context.Context, query *caldav.CalendarQuery) ([]caldav.CalendarObject, error) {
 	if query.CompFilter.Name != ical.CompCalendar {
 		return nil, fmt.Errorf("hydroxide/caldav: expected toplevel comp to be VCALENDAR")
 	}

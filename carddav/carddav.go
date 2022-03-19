@@ -2,6 +2,7 @@ package carddav
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -139,7 +140,7 @@ type backend struct {
 	privateKeys openpgp.EntityList
 }
 
-func (b *backend) AddressBook() (*carddav.AddressBook, error) {
+func (b *backend) AddressBook(ctx context.Context) (*carddav.AddressBook, error) {
 	return &carddav.AddressBook{
 		Path:            "/",
 		Name:            "ProtonMail",
@@ -173,7 +174,7 @@ func (b *backend) deleteCache(id string) {
 	b.locker.Unlock()
 }
 
-func (b *backend) GetAddressObject(path string, req *carddav.AddressDataRequest) (*carddav.AddressObject, error) {
+func (b *backend) GetAddressObject(ctx context.Context, path string, req *carddav.AddressDataRequest) (*carddav.AddressObject, error) {
 	id, err := parseAddressObjectPath(path)
 	if err != nil {
 		return nil, err
@@ -197,7 +198,7 @@ func (b *backend) GetAddressObject(path string, req *carddav.AddressDataRequest)
 	return b.toAddressObject(contact, req)
 }
 
-func (b *backend) ListAddressObjects(req *carddav.AddressDataRequest) ([]carddav.AddressObject, error) {
+func (b *backend) ListAddressObjects(ctx context.Context, req *carddav.AddressDataRequest) ([]carddav.AddressObject, error) {
 	if b.cacheComplete() {
 		b.locker.Lock()
 		defer b.locker.Unlock()
@@ -262,11 +263,11 @@ func (b *backend) ListAddressObjects(req *carddav.AddressDataRequest) ([]carddav
 	return aos, nil
 }
 
-func (b *backend) QueryAddressObjects(query *carddav.AddressBookQuery) ([]carddav.AddressObject, error) {
+func (b *backend) QueryAddressObjects(ctx context.Context, query *carddav.AddressBookQuery) ([]carddav.AddressObject, error) {
 	panic("TODO")
 }
 
-func (b *backend) PutAddressObject(path string, card vcard.Card) (loc string, err error) {
+func (b *backend) PutAddressObject(ctx context.Context, path string, card vcard.Card) (loc string, err error) {
 	id, err := parseAddressObjectPath(path)
 	if err != nil {
 		return "", err
@@ -280,7 +281,7 @@ func (b *backend) PutAddressObject(path string, card vcard.Card) (loc string, er
 	var contact *protonmail.Contact
 
 	var req carddav.AddressDataRequest
-	if _, getErr := b.GetAddressObject(path, &req); getErr == nil {
+	if _, getErr := b.GetAddressObject(ctx, path, &req); getErr == nil {
 		contact, err = b.c.UpdateContact(id, contactImport)
 		if err != nil {
 			return "", err
@@ -306,7 +307,7 @@ func (b *backend) PutAddressObject(path string, card vcard.Card) (loc string, er
 	return formatAddressObjectPath(contact.ID), nil
 }
 
-func (b *backend) DeleteAddressObject(path string) error {
+func (b *backend) DeleteAddressObject(ctx context.Context, path string) error {
 	id, err := parseAddressObjectPath(path)
 	if err != nil {
 		return err
